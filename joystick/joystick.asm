@@ -26,52 +26,43 @@ PMBASE = $d407
     org $600
 
     ; Set PM location
-    lda #PMBASE_PAGE
-    sta PMBASE    
+    mva #PMBASE_PAGE PMBASE    
 
     ; Clear PM area
     lda #0
     tay
 clearpm
-    sta PM_AREA_TOP, y
-    iny
+    sta PM_AREA_TOP, y+
     cpy #128
-    bne clearpm 
+    bne clearpm
 
     ; Store X position
-    lda #INITX
-    sta XLOC
+    mva #INITX XLOC
     sta HPOSP0
     ; Store Y position
-    lda #INITY
-    sta YLOC
+    mva #INITY YLOC
 
     ; Set player shape
     tay
     ldx #0
 prepare_player
-    lda player_shape, x
-    sta PM_AREA_TOP, y
-    iny
-    inx
+    lda player_shape, x+
+    sta PM_AREA_TOP, y+
     cpx #8
     bne prepare_player
 
     ; Enable player with double line resolution
-    lda #42
-    sta SDMCTL
+    mva #42 SDMCTL
     ; Turn on player
-    lda #2
-    sta GRACTL
-
-    lda #0
-    sta TRIG0_LAST
+    mva #2 GRACTL
+    ; Set initial trigger status to "on" so that correct player's color is set in the "change_player_and_text" routine
+    mva #0 TRIG0_LAST
 read_joystick ; Read trigger and stick
     lda TRIG0
     cmp TRIG0_LAST
-    beq read_stick ; No change in button state, no need to rerender player shape/color
+    seq ; No change in button state, no need to rerender player shape/color
     jsr change_player_and_text
-read_stick
+    ; Check stick with initial delay
     jsr delay
     lda PORTA
     and #1
@@ -86,7 +77,7 @@ side
     lda PORTA
     and #8
     beq right
-    jmp read_joystick
+    bne read_joystick
 
 up
     ; Don't move player over top of the screen 
@@ -98,11 +89,8 @@ up
     ldx #8
 up1
     ; Move player one position up
-    lda PM_AREA_TOP, y
-    dey
-    sta PM_AREA_TOP, y
-    iny
-    iny
+    lda:dey:sta PM_AREA_TOP, y
+    :2 iny
     dex
     bne up1
     dey
@@ -118,16 +106,12 @@ down
     cmp #$68
     beq side
     ; Start moving from bottom line of the player
-    clc
-    adc #7
+    add #7
     tay
 down1
     ; Move player one position down
-    lda PM_AREA_TOP, y
-    iny
-    sta PM_AREA_TOP, y
-    dey
-    dey
+    lda:iny:sta PM_AREA_TOP, y
+    :2 dey
     cpy YLOC
     bpl down1
     iny
@@ -156,8 +140,7 @@ right
 
 move_player_horizontally
     ; Display player on new position
-    lda XLOC
-    sta HPOSP0
+    mva XLOC HPOSP0
     jmp read_joystick
 
 delay
@@ -166,7 +149,7 @@ delay
     ldy #0
 wait
     dey
-    bne wait
+    rne
     dex
     bne wait
     rts
@@ -180,28 +163,24 @@ change_player_and_text
 invert_player
     lda PM_AREA_TOP, y
     eor #$ff
-    sta PM_AREA_TOP, y
-    iny
+    sta PM_AREA_TOP, y+
     dex
     bne invert_player
 
     ; Change color
+    ldx #COLOR_TRIG_ON
     lda TRIG0_LAST
-    beq set_color_on
-    lda #COLOR_TRIG_OFF
-    bne store_color
-set_color_on
-    lda #COLOR_TRIG_ON
+    beq store_color
+    ldx #COLOR_TRIG_OFF
 store_color
-    sta PCOLR0
+    stx PCOLR0
 
     ; Invert "trigger" text
     ldy #0
 invert_trigger_txt
     lda trigger_txt_start, y
     eor #$80
-    sta trigger_txt_start, y
-    iny
+    sta trigger_txt_start, y+
     cpy #trigger_txt_end - trigger_txt_start
     bne invert_trigger_txt
     rts
