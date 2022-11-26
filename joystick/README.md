@@ -1,1 +1,1 @@
-### Joystick move and trigger
+![Joystick](./joystick.gif)
