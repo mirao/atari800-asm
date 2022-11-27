@@ -1,3 +1,7 @@
+;
+; Moving player in P/M graphics and handling joystick trigger
+;
+ 
 PMBASE_PAGE = $34
 ; Top visible position in GR0
 PM_AREA_TOP = (PMBASE_PAGE + 2) << 8
