@@ -8,6 +8,7 @@ XLOC = $cc
 INITY = $32
 YLOC = $cd
 
+RTCLOK = $12
 SDMCTL = $22f
 ; Player's color
 COLOR_TRIG_OFF = $ba ; Olive green
@@ -53,6 +54,8 @@ prepare_player
 
     ; Enable player with double line resolution
     mva #42 SDMCTL
+    ; Wait for VBLANK interrupt, otherwise you might get a black stripe glitch when player is turned on
+    lda:cmp:req RTCLOK + 2
     ; Turn on player
     mva #2 GRACTL
     ; Set initial trigger status to "on" so that correct player's color is set in the "change_player_and_text" routine
