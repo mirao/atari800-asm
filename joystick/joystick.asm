@@ -1,7 +1,7 @@
 ;
 ; Moving player in P/M graphics and handling joystick trigger
 ;
- 
+
 PMBASE_PAGE = $34
 ; Top visible position in GR0
 PM_AREA_TOP = (PMBASE_PAGE + 2) << 8
@@ -17,6 +17,8 @@ SDMCTL = $22f
 ; Player's color
 COLOR_TRIG_OFF = $ba ; Olive green
 COLOR_TRIG_ON = $de ; Yellow
+; Used for waiting for VBI stage 2
+PTRIG7 = $283
 PCOLR0 = $2C0
 
 VRAMGR0 = $bc40
@@ -58,8 +60,11 @@ prepare_player
 
     ; Enable player with double line resolution
     mva #42 SDMCTL
-    ; Wait for VBLANK interrupt, otherwise you might get a black stripe glitch when player is turned on
-    lda:cmp:req RTCLOK + 2
+    ; Wait for VBI stage 2, otherwise you might get a black stripe glitch when player is turned on
+    ; Waiting uses the fact that PTRIG7 is reset in VBI stage 2 after SDMCTL -> DMACTL
+    mva #$ff PTRIG7
+    bit:rmi PTRIG7
+
     ; Turn on player
     mva #2 GRACTL
     ; Set initial trigger status to "on" so that correct player's color is set in the "change_player_and_text" routine
