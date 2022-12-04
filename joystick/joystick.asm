@@ -12,7 +12,7 @@ XLOC = $cc
 INITY = $32
 YLOC = $cd
 
-RTCLOK = $12
+SAVMSC = $58
 SDMCTL = $22f
 ; Player's color
 COLOR_TRIG_OFF = $ba ; Olive green
@@ -21,7 +21,6 @@ COLOR_TRIG_ON = $de ; Yellow
 PTRIG7 = $283
 PCOLR0 = $2C0
 
-VRAMGR0 = $bc40
 HPOSP0 = $d000
 ; Status of last trigger, 0 - on, 1 - off
 TRIG0_LAST = $ce
@@ -31,6 +30,14 @@ PORTA = $d300
 PMBASE = $d407
 
     org $600
+
+    ; Display text
+    ldy #0
+display_text
+    lda txt_start, y
+    sta (SAVMSC), y+
+    cpy #txt_end - txt_start
+    bcc display_text
 
     ; Set PM location
     mva #PMBASE_PAGE PMBASE    
@@ -188,21 +195,22 @@ store_color
     stx PCOLR0
 
     ; Invert "trigger" text
-    ldy #0
+    ldy #trigger_txt_start - txt_start
 invert_trigger_txt
-    lda trigger_txt_start, y
+    lda (SAVMSC), y
     eor #$80
-    sta trigger_txt_start, y+
-    cpy #trigger_txt_end - trigger_txt_start
+    sta (SAVMSC), y+
+    cpy #trigger_txt_end - txt_start
     bne invert_trigger_txt
     rts
 
 player_shape
     .by 255, 153, 153, 255, 255, 153, 153, 255
 
-    org VRAMGR0 + 2
-    .sb "** Move joystick or press "
+txt_start
+    .sb "  ** Move joystick or press "
 trigger_txt_start
     .sb +$80 "trigger"
 trigger_txt_end
     .sb " **"
+txt_end
