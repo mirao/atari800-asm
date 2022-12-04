@@ -33,7 +33,7 @@ display_text
     mva #TONE_INIT_VALUE TONE
     ; Unmute sound
     mva #0 LAST_MUTE_STATUS
-play
+check_mute_key
     ; Check if user wants to mute sound
     get_key
     cmp #KEY_M
@@ -45,7 +45,7 @@ play
     sta LAST_MUTE_STATUS
 check_mute_status
     lda LAST_MUTE_STATUS
-    bne play
+    bne check_mute_key
 
     ; Check if user wants to change tone
     get_key
@@ -65,7 +65,7 @@ switch_consol_values
     ; Switch values in CONSOL to play buzz 
     play_tone #8
     play_tone #0
-    jmp play
+    jmp check_mute_key
 
 txt_start
     .sb "    Press 'M' to mute/unmute sound      "
