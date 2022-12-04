@@ -81,5 +81,5 @@ txt_end
 .macro get_key
     lda CH
     ; Accept even upper case
-    and #%10111111
+    and #%1011 1111
 .endm
