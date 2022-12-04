@@ -27,5 +27,5 @@ $ mads joystick.asm && (Altirra64.exe joystick.obx &)
 * Install [VSCode](https://code.visualstudio.com/) and the extension [MADS](https://marketplace.visualstudio.com/items?itemName=mirao.mads) for highlighting of edited code
 * Debug code in Altirra
 ```bash
-$ mads -tl joystick.asm && (Altirra64.exe /debug /debugbrkrun /si joystick.obx &)
+$ mads -tlu joystick.asm && (Altirra64.exe /debug /debugbrkrun /si joystick.obx &)
 ```
