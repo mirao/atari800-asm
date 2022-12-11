@@ -13,19 +13,26 @@ Based on [Assembly Language Programming for the Atari Computers](https://ksquigg
 
 #### Example
 ```bash
-$ cd joystick
+$ cd pm_graphics
+
 # Assemble
-$ mads joystick.asm
-# Open binary in emulator
-$ Altirra64.exe joystick.obx
-$ atari800 joystick.obx
-# Or assemble and open in emulator in one step
-$ mads joystick.asm && (Altirra64.exe joystick.obx &)
+$ mads pm_graphics.asm
+
+# Open a binary in Altirra emulator
+$ Altirra64.exe pm_graphics.obx
+# Open a binary in Atari800 emulator
+$ atari800 pm_graphics.obx
+
+# Or assemble and open a binary in Altirra emulator in one step
+$ mads pm_graphics.asm && (Altirra64.exe pm_graphics.obx &)
 ```
 
 ### Debugging
 * Install [VSCode](https://code.visualstudio.com/) and the extension [MADS](https://marketplace.visualstudio.com/items?itemName=mirao.mads) for highlighting of edited code
 * Debug code in Altirra
-```bash
-$ mads -tlu joystick.asm && (Altirra64.exe /debug /debugbrkrun /si joystick.obx &)
-```
+    * Add the command `.sourcemode on` to `startup.atdbg` in your Altirra home folder
+    * Run this command
+
+        ```bash
+        $ mads -tlu pm_graphics.asm && (Altirra64.exe /debug /debugbrkrun /si pm_graphics.obx &)
+        ```
