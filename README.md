@@ -1,17 +1,21 @@
-## CPU 6502 assembler demos for Atari 800XL/XE
+# CPU 6502 assembler demos for Atari 800XL/XE
 
 Based on [Assembly Language Programming for the Atari Computers](https://ksquiggle.neocities.org/alp.htm) by Mark Chasin
-### Requirements
+
+## Requirements
+
 * [Mad Assembler](https://github.com/tebe6502/Mad-Assembler/releases)
 * Atari emulator, e.g.
-    * [Altirra](https://www.virtualdub.org/altirra.html)
-    * [Atari800](https://github.com/atari800/atari800/releases)
+  * [Altirra](https://www.virtualdub.org/altirra.html)
+  * [Atari800](https://github.com/atari800/atari800/releases)
 
 ### Instructions
+
 * Open a folder with a demo
 * Assemble and run in emulator
 
 #### Example
+
 ```bash
 $ cd pm_graphics
 
@@ -28,11 +32,14 @@ $ mads pm_graphics.asm && (Altirra64.exe pm_graphics.obx &)
 ```
 
 ### Debugging
+
 * Install [VSCode](https://code.visualstudio.com/) and the extension [MADS](https://marketplace.visualstudio.com/items?itemName=mirao.mads) for highlighting of edited code
 * Debug code in Altirra
-    * Add the command `.sourcemode on` to `startup.atdbg` in your Altirra home folder
-    * Run this command
+  * Add the command `.sourcemode on` to `startup.atdbg` in your Altirra home folder
+  * Assemble and debug
 
-        ```bash
-        $ mads -tlu pm_graphics.asm && (Altirra64.exe /debug /debugbrkrun /si pm_graphics.obx &)
-        ```
+```bash
+mads -tlu pm_graphics.asm && (Altirra64.exe /debug /debugbrkrun /si pm_graphics.obx &)
+```
+
+![Alt text](source_debug.png)
