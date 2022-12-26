@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "pm_graphics"
+		},
+		{
+			"path": "consol_sound"
+		}
+	],
+	"settings": {}
+}
