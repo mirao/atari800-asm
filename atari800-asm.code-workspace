@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "consol_sound"
+		},
+		{
+			"path": "gtia_gr0"
 		}
 	],
 	"settings": {}
