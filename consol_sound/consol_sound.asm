@@ -3,6 +3,8 @@
 ; Tone can be adjusted from keyboard
 ;
 
+    icl "../common/keys.asm"
+
 KEY_M = $25 ; Mute sound
 KEY_U = $0b ; Increase tone
 KEY_D = $3a ; Decrease tone
@@ -16,7 +18,6 @@ TXT_POS = 40 * 10
 TONE = $cc
 TXTLO = $cd
 SAVMSC = $58
-CH = $2fc
 CONSOL = $d01f
 
     org $600
@@ -39,7 +40,7 @@ check_mute_key
     cmp #KEY_M
     bne check_mute_status
     ; Mute/unmute sound
-    mva #$ff CH
+    reset_key
     lda LAST_MUTE_STATUS
     eor #1
     sta LAST_MUTE_STATUS
@@ -59,7 +60,7 @@ check_mute_status
 increment_tone
     inc TONE
 reset_ch
-    mva #$ff CH
+    reset_key
 
 switch_consol_values
     ; Switch values in CONSOL to play buzz 
@@ -76,10 +77,4 @@ txt_end
     ldy TONE
     dey:rne
     mva :val CONSOL
-.endm
-
-.macro get_key
-    lda CH
-    ; Accept even upper case
-    and #%1011 1111
 .endm
