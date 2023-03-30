@@ -119,16 +119,14 @@ change_lines
     ; Check if last char was processed
     cpy #(LAST_CHAR_ID + 1) * 8
     bcc get_prev_char
-    ; Last byte wass processed, its original low nibble will be moved to high nibble byte of 0th char 
+    ; Last byte was processed, its original low nibble will be moved to high nibble byte of 1th char 
     ldy #8
     jmp get_prev_char
 
-
-
-; Set 16 characters in a new character set, every char by different color
+; Set 1 + 16 characters in a new character set, each of 16 chars by different color
 .macro set_chbas
     ldy #(LAST_CHAR_ID + 1) * 8 - 1 ; 1 + 16 characters (each for one color). 0th char has always black color and will never rotate
-    lda #$ff ; Start from last character (#16) that will have orange color in both nibbles
+    lda #$ff ; Start from last character (#16) that will have initial orange color in both nibbles
 set_chbas_char
     ldx #8 ; Each character has 8 lines
 set_chbas_line
