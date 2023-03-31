@@ -7,8 +7,8 @@
     icl "../common/keys.asm"
 
 KEY_SPACE = $21 ; Pause animation
-KEY_F = $38 ; Rotate full char
-KEY_H = $39 ; Rotate half of char
+KEY_F = $38 ; Shift full char
+KEY_H = $39 ; Shift half of char
 
 LAST_CHAR_ID = 16; Index of last character on screen and also in character set
 
