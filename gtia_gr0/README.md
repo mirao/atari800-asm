@@ -1,4 +1,4 @@
-# Buzz sound
+# Display 16 colors in GRAPHICS 0 with GTIA mode GRAPHICS 11
 
 Follow main [README](../README.md)
 
