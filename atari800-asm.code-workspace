@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "gtia_gr0"
+		},
+		{
+			"path": "dli_bg_color"
 		}
 	],
 	"settings": {}
