@@ -47,7 +47,7 @@ wait_screen_refresh_inner
     beq wait_screen_refresh_inner
     
     ; Wait for a key press
-    get_key
+    get_key_lowercase
 test_keys
     cmp #KEY_F
     beq shift_full_chars
@@ -61,7 +61,7 @@ test_keys
 wait_for_space
     reset_key
 wait_for_space_inner
-    get_key
+    get_key_lowercase
     cmp #KEY_SPACE
     bne wait_for_space_inner
     lda LAST_SHIFT_KEY

@@ -36,7 +36,7 @@ display_text
     mva #0 LAST_MUTE_STATUS
 check_mute_key
     ; Check if user wants to mute sound
-    get_key
+    get_key_lowercase
     cmp #KEY_M
     bne check_mute_status
     ; Mute/unmute sound
@@ -49,7 +49,7 @@ check_mute_status
     bne check_mute_key
 
     ; Check if user wants to change tone
-    get_key
+    get_key_lowercase
     cmp #KEY_U
     beq increment_tone
     cmp #KEY_D

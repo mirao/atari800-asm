@@ -1,4 +1,4 @@
-# Display a bottom half of GR0 screen in various colors
+# Color a half of GR0 screen by all possible 128 colors
 
 Follow main [README](../README.md)
 
