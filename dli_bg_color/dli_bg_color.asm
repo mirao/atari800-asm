@@ -7,7 +7,7 @@
 DARK_RED = $22
 
 GR0_HALF_SCREEN_CHARS_CNT = 40 * 24 / 2 ; Number of characters in a half of the GR0 screen
-TEXT_LEN = txt_end - txt_start; Index of the last character in the text
+TEXT_LEN = txt_end - txt_start; Length of the text
 TEXT_UP_POS = (GR0_HALF_SCREEN_CHARS_CNT - TEXT_LEN) / 2; Char position of the text in upper screen
 TEXT_DOWN_POS = TEXT_UP_POS + GR0_HALF_SCREEN_CHARS_CNT ; Char position of the text in bottom screen
 TEXT_COLOR_INDEX = 24 ; Index of the hex color value (after '$')
@@ -20,8 +20,8 @@ LAST_COLOR = $ce ; Previous color
 LAST_TIME_COLOR_CHANGE = $cf ; When color was changed last time (in 1/60 sec)
 IS_BOTTOM_SCREEN_COLORFUL = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
 VRAM = $d1 ; Pointer to a text in video memory
-TEXT_CLEAR_LO = $d2 ; Pointer to a text message to clear
-TEXT_DISPLAY_LO = $d4 ; Pointer to a text message to display
+TEXT_CLEAR_LO = $d3 ; Pointer to a text message to clear
+TEXT_DISPLAY_LO = $d5 ; Pointer to a text message to display
 
 VDSLST = $200
 SDLSTL = $230
