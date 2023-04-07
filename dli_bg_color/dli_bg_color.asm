@@ -58,9 +58,11 @@ NMIEN = $d40e
     lda #%1100 0000
     sta NMIEN
 
-    ; Show text
+    ; Display initial text with color value
     jmp display_text_up
 wait_forever
+    cpx #2 ; Display color with initial text or when color was increased during last DLI
+    bne wait_for_key
     ldy #TEXT_COLOR_INDEX
     ; Display current hue
     lda LAST_COLOR
@@ -76,7 +78,9 @@ wait_forever
     jsr hex2ascii
     iny
     sta (VRAM), y
-     
+    ldx #0 ; A color value was refreshed. Don't refresh it anymore until change of color in DLI
+
+wait_for_key     
     get_key
     cmp #$ff
     beq wait_forever
@@ -94,10 +98,13 @@ display_text_up
 clear_and_display_text
     jsr clear_text
     jsr display_text
+    ldx #2 ; Display color value after pressing of a key, otherwise an empty value would be displayed until next change of color in DLI
     jmp wait_forever
 
 dli_routine
-    pha ; Only accumulator is used by both main code and the DLI routine
+    ; Store accumulator as it's used by both main code and the DLI routine
+    ; Also X register is shared by both, but at worst an issue with delayed displayed color value arises (but practically didn't notice it)
+    pha
     lda VCOUNT; $0f - upper half, $3f - bottom half
     lsr
     lsr
