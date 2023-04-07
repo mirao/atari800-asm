@@ -5,11 +5,12 @@
     icl "../common/keys.asm"
 
 DARK_RED = $22
-HEX_COLOR_LEN = 2
-TXT_COLOR_LEN = txt_color_end - txt_color_start
-TXT_COLOR_POS = 40 * 5 + (40 - TXT_COLOR_LEN - HEX_COLOR_LEN) / 2
-TXT_KEY_LEN = txt_end - txt_key
-TXT_KEY_POS = 40 * 6 + (40 - TXT_KEY_LEN) / 2
+
+GR0_HALF_SCREEN_CHARS_CNT = 40 * 12 ; Number of characters in a half of the GR0 screen
+TEXT_UP_POS = (GR0_HALF_SCREEN_CHARS_CNT - (txt_end - txt_start)) / 2; Char position of the text in upper screen
+TEXT_DOWN_POS = TEXT_UP_POS + GR0_HALF_SCREEN_CHARS_CNT ; Char position of the text in bottom screen
+TEXT_COLOR_INDEX = 24 ; Index of the hex color value (after '$')
+TEXT_LAST_CHAR_INDEX = txt_end - txt_start - 1; Index of the last character in the text
 
 RTCLOK2 = $14
 SAVMSC = $58
@@ -17,9 +18,9 @@ SAVMSC = $58
 DL = $cc ; A copy of display list pointer
 LAST_COLOR = $ce ; Previous color
 LAST_TIME_COLOR_CHANGE = $cf ; When color was changed last time (in 1/60 sec)
-IS_BOTTOM_SCREEN_COLORFUL = $d0 ; 0 - color of upper half of screen is changing, 1 - color of bottom half of screen is changing
-VRAM = $d1
-CURRENT_TXT = $d3
+IS_BOTTOM_SCREEN_COLORFUL = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
+VRAM = $d1 ; Pointer to a text in video memory
+TEXT_POS_LO = $d2 ; Pointer to a text message 
 
 VDSLST = $200
 SDLSTL = $230
@@ -30,18 +31,6 @@ VCOUNT = $d40b
 NMIEN = $d40e
 
     org $600
-
-    ; Display a text message "Press key"
-    adw SAVMSC #TXT_KEY_POS VRAM
-    mwa #txt_key CURRENT_TXT
-    ldy #TXT_KEY_LEN - 1
-    jsr display_text
-
-    ; Display a text message "Color"
-    adw SAVMSC #TXT_COLOR_POS VRAM
-    mwa #txt_color_start CURRENT_TXT
-    ldy #TXT_COLOR_LEN - 1
-    jsr display_text
 
     ; The bottom half of the screen is colored by default
     mva #1 IS_BOTTOM_SCREEN_COLORFUL
@@ -68,8 +57,10 @@ NMIEN = $d40e
     lda #%1100 0000
     sta NMIEN
 
+    ; Show text
+    jmp display_text_up
 wait_forever
-    ldy #TXT_COLOR_LEN
+    ldy #TEXT_COLOR_INDEX
     ; Display current hue
     lda LAST_COLOR
     lsr
@@ -92,10 +83,29 @@ wait_forever
     lda IS_BOTTOM_SCREEN_COLORFUL
     eor #1
     sta IS_BOTTOM_SCREEN_COLORFUL
+    bne display_text_up
+
+    ; Clear a text message at the top of the screen
+    mwa #TEXT_UP_POS TEXT_POS_LO
+    jsr clear_text
+    ; Display a text message at the bottom of the screen
+    adw SAVMSC #TEXT_DOWN_POS VRAM
+    ldy #TEXT_LAST_CHAR_INDEX
+    jsr display_text
+    jmp wait_forever
+
+display_text_up
+    ; Clear a text message at the bottom of the screen
+    mwa #TEXT_DOWN_POS TEXT_POS_LO
+    jsr clear_text
+    ; Display a text message in upper screen
+    adw SAVMSC #TEXT_UP_POS VRAM
+    ldy #TEXT_LAST_CHAR_INDEX
+    jsr display_text
     jmp wait_forever
 
 dli_routine
-    pha
+    pha ; Only accumulator is used by both main code and the DLI routine
     lda VCOUNT; $0f - upper half, $3f - bottom half
     lsr
     lsr
@@ -135,10 +145,21 @@ set_dli_instruction
     rts
 
 display_text
-    lda (CURRENT_TXT), y
+    lda txt_start, y
     sta (VRAM), y
     dey
-    bpl display_text
+    cpy #$ff
+    bne display_text
+    rts
+
+clear_text
+    adw SAVMSC TEXT_POS_LO VRAM
+    ldy #TEXT_LAST_CHAR_INDEX
+    lda #" "
+clear_char
+    sta (VRAM), y-
+    cpy #255
+    bne clear_char
     rts
 
 hex2ascii
@@ -149,10 +170,9 @@ make_digit
     adc #"0"
     rts
 
-txt_color_start
-    .sb "Color: $"
-txt_color_end
-    org * + HEX_COLOR_LEN ; Reserve hex color value
-txt_key
-    .sb "Press any key to flip the screen"
+txt_start
+    .sb "                Color: $                "
+    .sb "                                        "
+    .sb "                                        "
+    .sb "    Press any key to flip the screen    "
 txt_end
