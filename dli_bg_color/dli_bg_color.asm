@@ -6,11 +6,11 @@
 
 DARK_RED = $22
 
-GR0_HALF_SCREEN_CHARS_CNT = 40 * 12 ; Number of characters in a half of the GR0 screen
-TEXT_UP_POS = (GR0_HALF_SCREEN_CHARS_CNT - (txt_end - txt_start)) / 2; Char position of the text in upper screen
+GR0_HALF_SCREEN_CHARS_CNT = 40 * 24 / 2 ; Number of characters in a half of the GR0 screen
+TEXT_LEN = txt_end - txt_start; Index of the last character in the text
+TEXT_UP_POS = (GR0_HALF_SCREEN_CHARS_CNT - TEXT_LEN) / 2; Char position of the text in upper screen
 TEXT_DOWN_POS = TEXT_UP_POS + GR0_HALF_SCREEN_CHARS_CNT ; Char position of the text in bottom screen
 TEXT_COLOR_INDEX = 24 ; Index of the hex color value (after '$')
-TEXT_LAST_CHAR_INDEX = txt_end - txt_start - 1; Index of the last character in the text
 
 RTCLOK2 = $14
 SAVMSC = $58
@@ -20,7 +20,8 @@ LAST_COLOR = $ce ; Previous color
 LAST_TIME_COLOR_CHANGE = $cf ; When color was changed last time (in 1/60 sec)
 IS_BOTTOM_SCREEN_COLORFUL = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
 VRAM = $d1 ; Pointer to a text in video memory
-TEXT_POS_LO = $d2 ; Pointer to a text message 
+TEXT_CLEAR_LO = $d2 ; Pointer to a text message to clear
+TEXT_DISPLAY_LO = $d4 ; Pointer to a text message to display
 
 VDSLST = $200
 SDLSTL = $230
@@ -84,23 +85,14 @@ wait_forever
     eor #1
     sta IS_BOTTOM_SCREEN_COLORFUL
     bne display_text_up
-
-    ; Clear a text message at the top of the screen
-    mwa #TEXT_UP_POS TEXT_POS_LO
-    jsr clear_text
-    ; Display a text message at the bottom of the screen
-    adw SAVMSC #TEXT_DOWN_POS VRAM
-    ldy #TEXT_LAST_CHAR_INDEX
-    jsr display_text
-    jmp wait_forever
-
+    mwa #TEXT_UP_POS TEXT_CLEAR_LO
+    mwa #TEXT_DOWN_POS TEXT_DISPLAY_LO
+    jmp clear_and_display_text
 display_text_up
-    ; Clear a text message at the bottom of the screen
-    mwa #TEXT_DOWN_POS TEXT_POS_LO
+    mwa #TEXT_DOWN_POS TEXT_CLEAR_LO
+    mwa #TEXT_UP_POS TEXT_DISPLAY_LO
+clear_and_display_text
     jsr clear_text
-    ; Display a text message in upper screen
-    adw SAVMSC #TEXT_UP_POS VRAM
-    ldy #TEXT_LAST_CHAR_INDEX
     jsr display_text
     jmp wait_forever
 
@@ -144,24 +136,29 @@ set_dli_instruction
     sta (dl), y
     rts
 
+; Display a text message
 display_text
+    adw SAVMSC TEXT_DISPLAY_LO VRAM
+    ldy #0
+display_char
     lda txt_start, y
-    sta (VRAM), y
-    dey
-    cpy #$ff
-    bne display_text
+    sta (VRAM), y+
+    cpy #TEXT_LEN
+    bcc display_char
     rts
 
+; Clear a text message
 clear_text
-    adw SAVMSC TEXT_POS_LO VRAM
-    ldy #TEXT_LAST_CHAR_INDEX
+    adw SAVMSC TEXT_CLEAR_LO VRAM
+    ldy #0
     lda #" "
 clear_char
-    sta (VRAM), y-
-    cpy #255
-    bne clear_char
+    sta (VRAM), y+
+    cpy #TEXT_LEN
+    bcc clear_char
     rts
 
+; Convert a hex digit to internal ASCII
 hex2ascii
     cmp #10
     bcc make_digit
