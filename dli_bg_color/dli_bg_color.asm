@@ -16,7 +16,8 @@ RTCLOK2 = $14
 SAVMSC = $58
 
 DL = $cc ; A copy of display list pointer
-LAST_COLOR = $ce ; Previous color
+DYNAMIC_COLOR = $ce ; Background color in a half screen with color animation
+BACKGROUND_COLOR = $d7 ; Background color in any part of screen - either a color for static part (blue) or a color for animated part
 LAST_TIME_COLOR_CHANGE = $cf ; When color was changed last time (in 1/60 sec)
 IS_BOTTOM_SCREEN_COLORFUL = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
 VRAM = $d1 ; Pointer to a text in video memory
@@ -52,7 +53,7 @@ NMIEN = $d40e
     lda RTCLOK2
     sta LAST_TIME_COLOR_CHANGE
     lda #DARK_RED
-    sta LAST_COLOR
+    sta DYNAMIC_COLOR
 
     ; Enable DLI
     lda #%1100 0000
@@ -61,26 +62,8 @@ NMIEN = $d40e
     ; Display initial text with color value
     jmp display_text_up
 wait_forever
-    cpx #2 ; Display color with initial text or when color was increased during last DLI
-    bne wait_for_key
-    ldy #TEXT_COLOR_INDEX
-    ; Display current hue
-    lda LAST_COLOR
-    lsr
-    lsr
-    lsr
-    lsr
-    jsr hex2ascii
-    sta (VRAM), y
-    ; Display current luminance
-    lda LAST_COLOR
-    and #$0f
-    jsr hex2ascii
-    iny
-    sta (VRAM), y
-    ldx #0 ; A color value was refreshed. Don't refresh it anymore until change of color in DLI
-
-wait_for_key     
+    jsr set_color_for_dli
+    jsr display_color_value
     get_key
     cmp #$ff
     beq wait_forever
@@ -102,36 +85,8 @@ clear_and_display_text
     jmp wait_forever
 
 dli_routine
-    ; Store accumulator as it's used by both main code and the DLI routine
-    ; Also X register is shared by both, but at worst an issue with delayed displayed color value arises (but practically didn't notice it)
     pha
-    lda VCOUNT; $0f - upper half, $3f - bottom half
-    lsr
-    lsr
-    lsr
-    lsr
-    and #$01
-    eor IS_BOTTOM_SCREEN_COLORFUL
-    beq render_screen_dynamic_color
-    ; Restore standard blue color
-    lda COLOR2
-    jmp set_color
-render_screen_dynamic_color
-    ldx #0 ; Keep last color unless some time passed
-    lda LAST_TIME_COLOR_CHANGE
-    add #16 ; Wait 16/60 sec for change of color
-    cmp RTCLOK2
-    bne increase_color
-    ; A delay passed
-    ; Set new time for next check
-    sta LAST_TIME_COLOR_CHANGE
-    ; Increase color
-    ldx #2
-increase_color
-    txa
-    add LAST_COLOR
-    sta LAST_COLOR
-set_color
+    lda BACKGROUND_COLOR
     sta WSYNC ; Change color since the beginning of the next line
     sta COLPF2 ; Set background color
     pla
@@ -141,6 +96,67 @@ set_dli_instruction
     lda (dl), y
     ora #%1000 0000
     sta (dl), y
+    rts
+
+set_color_for_dli
+    lda VCOUNT ; Half of scan lines
+    cmp #$0f ; for DLI on top screen
+    beq get_color
+    cmp #$3e ; for DLI in the middle of the screen. It's less than the half scan line with DLI (scan line number is 127, half is $3f) otherwise DLI would occur earlier than preparation of the color and screen would be flickering
+    beq get_color
+    rts
+get_color
+    lsr
+    lsr
+    lsr
+    lsr
+    and #$01
+    eor IS_BOTTOM_SCREEN_COLORFUL
+    beq render_screen_dynamic_color
+    ; Restore standard blue color to the "static" half of the screen
+    lda COLOR2
+    sta BACKGROUND_COLOR
+    rts
+render_screen_dynamic_color
+    ldx #0 ; Keep last color unless some time passed
+    lda RTCLOK2
+    sub LAST_TIME_COLOR_CHANGE
+    cmp #16 ; Wait at least 16/60 sec for change of color
+    bcc store_color
+    ; A delay passed
+    ; Set new time for next check
+    lda RTCLOK2
+    sta LAST_TIME_COLOR_CHANGE
+    ; Increase color
+    ldx #2
+store_color
+    txa
+    add DYNAMIC_COLOR
+    sta DYNAMIC_COLOR
+    sta BACKGROUND_COLOR
+    rts
+
+display_color_value
+    cpx #2 ; Display color value with initial text or when color was increased during last DLI
+    beq display_hue_luminance
+    rts
+display_hue_luminance
+    ldy #TEXT_COLOR_INDEX
+    ; Display current hue
+    lda DYNAMIC_COLOR
+    lsr
+    lsr
+    lsr
+    lsr
+    jsr hex2ascii
+    sta (VRAM), y
+    ; Display current luminance
+    lda DYNAMIC_COLOR
+    and #$0f
+    jsr hex2ascii
+    iny
+    sta (VRAM), y
+    ldx #0 ; A color value was refreshed. Don't refresh it anymore until change of color in DLI
     rts
 
 ; Display a text message
