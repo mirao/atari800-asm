@@ -18,7 +18,7 @@ Pause app and open debugger (Press `F8` in Altirra)
 
 The color will be set as a background color in GR0 screen and VBI doesn't replace the color from the shadow `COLOR2` (`$2c6`).
 
-<video src='./bg_color.mp4' width=180/>
+![HW background color](https://user-images.githubusercontent.com/12584138/231277830-2902c410-0fb9-4211-85a8-5cc731e6c2a1.mp4)
 
 ### Modify character set
 
@@ -26,5 +26,3 @@ The color will be set as a background color in GR0 screen and VBI doesn't replac
 2. Modify a character in character set (`$e000`)
 
 The change appears on screen.
-
-<video src='./char_set.mp4' width=180/>
