@@ -14,6 +14,9 @@
 		},
 		{
 			"path": "dli_bg_color"
+		},
+		{
+			"path": "move_os_into_ram"
 		}
 	],
 	"settings": {}
