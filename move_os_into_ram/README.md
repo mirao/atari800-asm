@@ -13,7 +13,8 @@ Pause app and open debugger (Press `F8` in Altirra)
 ### Change screen background's color
 
 1. Change `STA COLPM0,X` to `LDA COLPM0,X` on the address `$c16f` - use emulator's assembler or just change the 1st byte from `$9d` to `$bd`
-    - 💡 You can simulate the same behavior even with OS in ROM. Just set `0` into `NMIEN` (`$d40e`) - it disables VBI completely and therefore shadow colors are ignored
+
+    💡 You can simulate the same behavior even with OS in ROM. Just set `0` into `NMIEN` (`$d40e`) - it disables VBI completely and therefore shadow colors are ignored.
 2. Continue (`F8` again)
 3. Write a color into HW `COLPF2` (`$d018`)
 
