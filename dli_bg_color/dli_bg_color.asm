@@ -1,7 +1,7 @@
 ;
 ; Show a half of GR0 screen in various colors
 ;
-
+    icl "../common/hardware.asm"
     icl "../common/keys.asm"
 
 DARK_RED = $22
@@ -12,52 +12,37 @@ TEXT_UP_POS = (GR0_HALF_SCREEN_CHARS_CNT - TEXT_LEN) / 2; Char position of the t
 TEXT_DOWN_POS = TEXT_UP_POS + GR0_HALF_SCREEN_CHARS_CNT ; Char position of the text in bottom screen
 TEXT_COLOR_INDEX = 24 ; Index of the hex color value (after '$')
 
-RTCLOK2 = $14
-SAVMSC = $58
-
-DL = $cc ; A copy of display list pointer
 DYNAMIC_COLOR = $ce ; Background color in a half screen with color animation
 BACKGROUND_COLOR = $d7 ; Background color in any part of screen - either a color for static part (blue) or a color for animated part
 LAST_TIME_COLOR_CHANGE = $cf ; When color was changed last time (in 1/60 sec)
-IS_BOTTOM_SCREEN_COLORFUL = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
+IS_BOTTOM_SCREEN_COLOR_ANIMATED = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
 VRAM = $d1 ; Pointer to a text in video memory
 TEXT_CLEAR_LO = $d3 ; Pointer to a text message to clear
 TEXT_DISPLAY_LO = $d5 ; Pointer to a text message to display
 
-VDSLST = $200
-SDLSTL = $230
-COLOR2 = $2c6
-COLPF2 = $d018
-WSYNC = $d40a
-VCOUNT = $d40b
-NMIEN = $d40e
-
     org $600
 
-    ; The bottom half of the screen is colored by default
-    mva #1 IS_BOTTOM_SCREEN_COLORFUL
+    ; The bottom half of the screen is animated by default
+    mva #1 IS_BOTTOM_SCREEN_COLOR_ANIMATED
 
     ; Init display list vector
-    mwa SDLSTL DL
+    jsr init_dlist_vector
     ; Set DLI at the begin of the screen
     ldy #2
     jsr set_dli_instruction
     ; Set DLI in the middle of the screen
     ldy #16
     jsr set_dli_instruction
-    
-    ; Init vector by DLI routine
-    mwa #dli_routine VDSLST
+    ; Init vector by DLI routine and enable DLI
+    ldy #<dli_routine
+    ldx #>dli_routine
+    jsr init_dli
 
     ; Init clock and color
     lda RTCLOK2
     sta LAST_TIME_COLOR_CHANGE
     lda #DARK_RED
     sta DYNAMIC_COLOR
-
-    ; Enable DLI
-    lda #%1100 0000
-    sta NMIEN
 
     ; Display initial text with color value
     jmp display_text_up
@@ -68,9 +53,9 @@ wait_forever
     cmp #$ff
     beq wait_forever
     reset_key
-    lda IS_BOTTOM_SCREEN_COLORFUL
+    lda IS_BOTTOM_SCREEN_COLOR_ANIMATED
     eor #1
-    sta IS_BOTTOM_SCREEN_COLORFUL
+    sta IS_BOTTOM_SCREEN_COLOR_ANIMATED
     bne display_text_up
     mwa #TEXT_UP_POS TEXT_CLEAR_LO
     mwa #TEXT_DOWN_POS TEXT_DISPLAY_LO
@@ -92,12 +77,6 @@ dli_routine
     pla
     rti
 
-set_dli_instruction
-    lda (dl), y
-    ora #%1000 0000
-    sta (dl), y
-    rts
-
 set_color_for_dli
     lda VCOUNT ; Half of scan lines
     cmp #$0f ; for DLI on top screen
@@ -111,7 +90,7 @@ get_color
     lsr
     lsr
     and #$01
-    eor IS_BOTTOM_SCREEN_COLORFUL
+    eor IS_BOTTOM_SCREEN_COLOR_ANIMATED
     beq render_screen_dynamic_color
     ; Restore standard blue color to the "static" half of the screen
     lda COLOR2
@@ -189,6 +168,8 @@ hex2ascii
 make_digit
     adc #"0"
     rts
+
+    icl "../common/dlist.asm"
 
 txt_start
     .sb "                Color: $                "

@@ -1,0 +1,25 @@
+RTCLOK2 = $14
+SAVMSC  = $58
+
+VDSLST  = $200
+SDMCTL  = $22f
+SDLSTL  = $230
+GPRIOR  = $26f
+PTRIG7  = $283
+PCOLR0  = $2c0
+COLOR2  = $2c6
+COLOR4  = $2c8
+CHBAS   = $2f4
+CH      = $2fc
+
+HPOSP0  = $d000
+TRIG0   = $d010
+GRACTL  = $d01d
+CONSOL  = $d01f
+VCOUNT  = $d40b
+COLPF2  = $d018
+PORTA   = $d300
+PORTB   = $d301
+PMBASE  = $d407
+WSYNC   = $d40a
+NMIEN   = $d40e

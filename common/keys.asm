@@ -1,10 +1,13 @@
-CH = $2fc
+.ifndef CH 
+    icl "hardware.asm"
+.endif
 
-.macro get_key_lowercase
-    lda CH
-    ; Accept even upper case
-    and #%1011 1111
-.endm
+KEY_SPACE = $21
+KEY_D     = $3a
+KEY_F     = $38
+KEY_H     = $39
+KEY_M     = $25
+KEY_U     = $0b
 
 .macro get_key
     lda CH

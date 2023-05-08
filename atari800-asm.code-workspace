@@ -1,23 +1,26 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "pm_graphics"
-		},
-		{
-			"path": "consol_sound"
-		},
-		{
-			"path": "gtia_gr0"
-		},
-		{
-			"path": "dli_bg_color"
-		},
-		{
-			"path": "move_os_into_ram"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "pm_graphics"
+    },
+    {
+      "path": "consol_sound"
+    },
+    {
+      "path": "gtia_gr0"
+    },
+    {
+      "path": "dli_bg_color"
+    },
+    {
+      "path": "dli_rainbow"
+    },
+    {
+      "path": "move_os_into_ram"
+    },
+  ],
+  "settings": {}
 }

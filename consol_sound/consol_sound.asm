@@ -3,11 +3,8 @@
 ; Tone can be adjusted from keyboard
 ;
 
+    icl "../common/hardware.asm"
     icl "../common/keys.asm"
-
-KEY_M = $25 ; Mute sound
-KEY_U = $0b ; Increase tone
-KEY_D = $3a ; Decrease tone
 
 TONE_INIT_VALUE = $80
 LAST_MUTE_STATUS = $cd
@@ -17,8 +14,6 @@ TXT_POS = 40 * 10
 ; Memory
 TONE = $cc
 TXTLO = $cd
-SAVMSC = $58
-CONSOL = $d01f
 
     org $600
 
@@ -36,8 +31,8 @@ display_text
     mva #0 LAST_MUTE_STATUS
 check_mute_key
     ; Check if user wants to mute sound
-    get_key_lowercase
-    cmp #KEY_M
+    get_key
+    cmp #KEY_M ; Mute sound
     bne check_mute_status
     ; Mute/unmute sound
     reset_key
@@ -49,10 +44,10 @@ check_mute_status
     bne check_mute_key
 
     ; Check if user wants to change tone
-    get_key_lowercase
-    cmp #KEY_U
+    get_key
+    cmp #KEY_U ; Increase tone
     beq increment_tone
-    cmp #KEY_D
+    cmp #KEY_D ; Decrease tone
     bne switch_consol_values
     ; Decrement tone
     dec TONE

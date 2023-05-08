@@ -4,23 +4,14 @@
 ; Based on https://www.atariarchives.org/agagd/chapter1.php#:~:text=LST%20(Listed%20BASIC)-,GTIA%20Trick,-The%20GTIA%20modes
 ;
 
+    icl "../common/hardware.asm"
     icl "../common/keys.asm"
-
-KEY_SPACE = $21 ; Pause animation
-KEY_F = $38 ; Shift full char
-KEY_H = $39 ; Shift half of char
 
 LAST_CHAR_ID = 16; Index of last character on screen and also in character set
 
 PREV_CHAR = $cc; Location of previously processed char when shifting half of char
 LAST_SHIFT_KEY = $cd ; Last key pressed to shift characters. KEY_F means full char shifting, KEY_H means half char shifting
 CHBAS_CUSTOM_ADR = $3400
-
-RTCLOK2 = $14
-SAVMSC = $58
-GPRIOR = $26f
-CHBAS = $2f4
-COLOR4 = $2c8
 
     org $600
 
@@ -36,7 +27,7 @@ init_char
     sta (SAVMSC), y-
     bpl init_char
 
-    ; Default mode is "shift full character"
+    ; Default mode is "Shift full character"
     mva #KEY_F LAST_SHIFT_KEY
 
     ; Wait for 1/60 sec to refresh screen
@@ -47,11 +38,11 @@ wait_screen_refresh_inner
     beq wait_screen_refresh_inner
     
     ; Wait for a key press
-    get_key_lowercase
+    get_key
 test_keys
-    cmp #KEY_F
+    cmp #KEY_F ; Shift full char
     beq shift_full_chars
-    cmp #KEY_H
+    cmp #KEY_H ; Shift half of char
     beq shift_half_chars
     cmp #KEY_SPACE
     beq wait_for_space 
@@ -61,7 +52,7 @@ test_keys
 wait_for_space
     reset_key
 wait_for_space_inner
-    get_key_lowercase
+    get_key
     cmp #KEY_SPACE
     bne wait_for_space_inner
     lda LAST_SHIFT_KEY

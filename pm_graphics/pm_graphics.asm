@@ -2,6 +2,8 @@
 ; Moving player in P/M graphics and handling joystick trigger
 ;
 
+    icl "../common/hardware.asm"
+
 PMBASE_PAGE = $34
 ; Top visible position in GR0
 PM_AREA_TOP = (PMBASE_PAGE + 2) << 8
@@ -12,22 +14,12 @@ XLOC = $cc
 INITY = $32
 YLOC = $cd
 
-SAVMSC = $58
-SDMCTL = $22f
 ; Player's color
 COLOR_TRIG_OFF = $ba ; Olive green
 COLOR_TRIG_ON = $de ; Yellow
-; Used for waiting for VBI stage 2
-PTRIG7 = $283
-PCOLR0 = $2C0
 
-HPOSP0 = $d000
 ; Status of last trigger, 0 - on, 1 - off
 TRIG0_LAST = $ce
-TRIG0 = $d010
-GRACTL = $d01d
-PORTA = $d300
-PMBASE = $d407
 
     org $600
 
