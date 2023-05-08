@@ -21,6 +21,7 @@ wait_forever
     jmp wait_forever
 
 dli_routine
+    ; No need to save registers because the DLI interrupts the main program during an infinite loop where no registers are used
     ldx #8 * 24 ; Draw 192 scan lines = 24 rows of ANTIC 2
     lda RTCLOK2 ; Use RTCLOK2 as a color for the 1st scan line of the 1st ANTIC 2 row
     asl ; Use even luminance so that it's different from the luminance of the previous frame
