@@ -1,6 +1,6 @@
 # Display 16 colors in GRAPHICS 0 with GTIA mode GRAPHICS 11
 
-Follow main [README](../README.md)
+Follow the main [README](../README.md) to compile/run/debug.
 
 * Press `SPACE` to pause animation
 * Press `H` to animate by half of character

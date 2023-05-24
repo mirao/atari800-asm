@@ -1,5 +1,5 @@
 # Buzz sound
 
-Follow main [README](../README.md)
+Follow the main [README](../README.md) to compile/run/debug.
 
 ![Consol_sound](./consol_sound.png)

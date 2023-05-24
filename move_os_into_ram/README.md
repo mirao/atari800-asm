@@ -2,9 +2,9 @@
 
 I copied the code from [AtariArchives](https://www.atariarchives.org/mapping/appendix12.php#:~:text=Move%20XL%20OS%20ROM%20into%20RAM) and made it compatible with MADS.
 
-Follow main [README](../README.md) to compile and run it
+Follow the main [README](../README.md) to compile/run/debug.
 
-When you do it, OS (`$c000`-`$ffff` except `$d000`-`d7fff`) will be in RAM and therefore you can write there.
+When you run the demo, OS (`$c000`-`$ffff` except `$d000`-`d7fff`) will be in RAM and therefore you can write there.
 
 ## Examples
 

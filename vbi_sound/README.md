@@ -1,5 +1,5 @@
 # Sound played during VBI
 
-Follow main [README](../README.md)
+Follow the main [README](../README.md) to compile/run/debug.
 
 ![VBI_sound](./vbi_sound.png)

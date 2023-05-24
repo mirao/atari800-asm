@@ -2,6 +2,6 @@
 
 Inspired by <https://playermissile.com/dli_tutorial/index.html#marching-rainbow-text>
 
-Follow [README](../README.md) to compile/run/debug.
+Follow the main [README](../README.md) to compile/run/debug.
 
 ![DLI rainbow](./dli_rainbow.gif)
