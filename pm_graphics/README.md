@@ -1,6 +1,6 @@
 # Using of joystick in player/missile graphics
 
-Follow the main [README](../README.md) to compile/run/debug.
+Follow the main [README](../README.md) to assemble/run/debug.
 
 ![P/M Graphics](./pm_graphics.gif)
 
