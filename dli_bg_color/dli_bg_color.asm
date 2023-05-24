@@ -3,6 +3,7 @@
 ;
     icl "../common/hardware.asm"
     icl "../common/keys.asm"
+    icl "../common/screen.asm"
 
 DARK_RED = $22
 
@@ -16,9 +17,8 @@ DYNAMIC_COLOR = $ce ; Background color in a half screen with color animation
 BACKGROUND_COLOR = $d7 ; Background color in any part of screen - either a color for static part (blue) or a color for animated part
 LAST_TIME_COLOR_CHANGE = $cf ; When color was changed last time (in 1/60 sec)
 IS_BOTTOM_SCREEN_COLOR_ANIMATED = $d0 ; 0 - upper half of screen is colored, 1 - bottom half of screen is colored
-VRAM = $d1 ; Pointer to a text in video memory
-TEXT_CLEAR_LO = $d3 ; Pointer to a text message to clear
-TEXT_DISPLAY_LO = $d5 ; Pointer to a text message to display
+TEXT_CLEAR_LO = $d3 ; Vector to a text message to clear
+TEXT_DISPLAY_LO = $d5 ; Vector to a text message to display
 
     org $600
 
@@ -64,8 +64,8 @@ display_text_up
     mwa #TEXT_DOWN_POS TEXT_CLEAR_LO
     mwa #TEXT_UP_POS TEXT_DISPLAY_LO
 clear_and_display_text
-    jsr clear_text
-    jsr display_text
+    clear_text TEXT_CLEAR_LO, TEXT_LEN
+    display_text TEXT_DISPLAY_LO, txt_start, TEXT_LEN
     ldx #2 ; Display color value after pressing of a key, otherwise an empty value would be displayed until next change of color in DLI
     jmp wait_forever
 
@@ -136,28 +136,6 @@ display_hue_luminance
     iny
     sta (VRAM), y
     ldx #0 ; A color value was refreshed. Don't refresh it anymore until change of color in DLI
-    rts
-
-; Display a text message
-display_text
-    adw SAVMSC TEXT_DISPLAY_LO VRAM
-    ldy #0
-display_char
-    lda txt_start, y
-    sta (VRAM), y+
-    cpy #TEXT_LEN
-    bcc display_char
-    rts
-
-; Clear a text message
-clear_text
-    adw SAVMSC TEXT_CLEAR_LO VRAM
-    ldy #0
-    lda #" "
-clear_char
-    sta (VRAM), y+
-    cpy #TEXT_LEN
-    bcc clear_char
     rts
 
 ; Convert a hex digit to internal ASCII

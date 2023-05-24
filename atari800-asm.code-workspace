@@ -4,6 +4,9 @@
       "path": "."
     },
     {
+      "path": "move_os_into_ram"
+    },
+    {
       "path": "pm_graphics"
     },
     {
@@ -19,8 +22,8 @@
       "path": "dli_rainbow"
     },
     {
-      "path": "move_os_into_ram"
-    },
+      "path": "vbi_sound"
+    }
   ],
   "settings": {}
 }

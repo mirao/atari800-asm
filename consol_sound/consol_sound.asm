@@ -5,25 +5,21 @@
 
     icl "../common/hardware.asm"
     icl "../common/keys.asm"
+    icl "../common/screen.asm"
 
 TONE_INIT_VALUE = $80
 LAST_MUTE_STATUS = $cd
 
-TXT_POS = 40 * 10
-
+TXT_POS = 40 * 11
+TXT_POS_LO = $ce
 ; Memory
 TONE = $cc
-TXTLO = $cd
 
     org $600
 
     ; Display text
-    adw SAVMSC #TXT_POS TXTLO
-    ldy #txt_end - txt_start
-display_text
-    lda txt_start, y
-    sta (TXTLO), y-
-    bne display_text
+    mwa #TXT_POS TXT_POS_LO
+    display_text TXT_POS_LO, txt_start, (txt_end - txt_start)
 
     ; Initial tone
     mva #TONE_INIT_VALUE TONE

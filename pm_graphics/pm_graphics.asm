@@ -3,6 +3,7 @@
 ;
 
     icl "../common/hardware.asm"
+    icl "../common/screen.asm"
 
 PMBASE_PAGE = $34
 ; Top visible position in GR0
@@ -21,15 +22,13 @@ COLOR_TRIG_ON = $de ; Yellow
 ; Status of last trigger, 0 - on, 1 - off
 TRIG0_LAST = $ce
 
+TXT_POS_LO = $cf
+
     org $600
 
     ; Display text
-    ldy #0
-display_text
-    lda txt_start, y
-    sta (SAVMSC), y+
-    cpy #txt_end - txt_start
-    bcc display_text
+    mwa #0 TXT_POS_LO
+    display_text TXT_POS_LO, txt_start, (txt_end - txt_start)
 
     ; Set PM location
     mva #PMBASE_PAGE PMBASE    
@@ -186,14 +185,8 @@ invert_player
 store_color
     stx PCOLR0
 
-    ; Invert "trigger" text
-    ldy #trigger_txt_start - txt_start
-invert_trigger_txt
-    lda (SAVMSC), y
-    eor #$80
-    sta (SAVMSC), y+
-    cpy #trigger_txt_end - txt_start
-    bne invert_trigger_txt
+    ; Invert the "trigger" text
+    invert_text (trigger_txt_start - txt_start), (trigger_txt_end - txt_start)
     rts
 
 player_shape
