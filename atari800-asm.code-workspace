@@ -23,6 +23,9 @@
     },
     {
       "path": "vbi_sound"
+    },
+    {
+      "path": "dl_hscrol"
     }
   ],
   "settings": {}

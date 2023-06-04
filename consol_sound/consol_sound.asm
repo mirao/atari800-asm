@@ -10,7 +10,7 @@
 TONE_INIT_VALUE = $80
 LAST_MUTE_STATUS = $cd
 
-TXT_POS = 40 * 11
+TXT_POS = GR0_LINE_LENGTH * 11
 TXT_POS_LO = $ce
 ; Memory
 TONE = $cc

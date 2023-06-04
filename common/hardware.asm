@@ -22,6 +22,7 @@ AUDF1   = $d200
 AUDC1   = $d201
 PORTA   = $d300
 PORTB   = $d301
+HSCROL  = $d404
 PMBASE  = $d407
 WSYNC   = $d40a
 NMIEN   = $d40e

@@ -2,7 +2,8 @@
     icl "hardware.asm"
 .endif
 
-DL = $cc ; A copy of display list pointer
+HS_MODIFIER = $10
+DL = $e0 ; A copy of display list pointer
 
     ; Init custom display list vector
 init_dlist_vector

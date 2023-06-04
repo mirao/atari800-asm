@@ -2,7 +2,8 @@
     icl "hardware.asm"
 .endif
 
-VRAM = $e0 ; Vector to a part of screen memory where text is displayed
+GR0_LINE_LENGTH = 40 ; Length of a line in graphics mode 0
+VRAM = $e2 ; Vector to a part of screen memory where text is displayed
 
 ; Display text on screen
 ;

@@ -7,7 +7,7 @@
 
 DARK_RED = $22
 
-GR0_HALF_SCREEN_CHARS_CNT = 40 * 24 / 2 ; Number of characters in a half of the GR0 screen
+GR0_HALF_SCREEN_CHARS_CNT = GR0_LINE_LENGTH * 24 / 2 ; Number of characters in a half of the GR0 screen
 TEXT_LEN = txt_end - txt_start; Length of the text
 TEXT_UP_POS = (GR0_HALF_SCREEN_CHARS_CNT - TEXT_LEN) / 2; Char position of the text in upper screen
 TEXT_DOWN_POS = TEXT_UP_POS + GR0_HALF_SCREEN_CHARS_CNT ; Char position of the text in bottom screen

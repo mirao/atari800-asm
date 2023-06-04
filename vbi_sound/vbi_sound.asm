@@ -6,7 +6,7 @@
     icl "../common/keys.asm"
     icl "../common/screen.asm"
 
-TXT_POS = 40 * 11 ; Position of text on screen relative to upper left corner of screen
+TXT_POS = GR0_LINE_LENGTH * 11 ; Position of text on screen relative to upper left corner of screen
 TXT_POS_LO = $d2
 
 PERIOD = $d0
